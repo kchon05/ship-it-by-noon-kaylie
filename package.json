@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/check-connection.js",
-    "create-db": "node scripts/create-database.js"
+    "create-db": "node scripts/create-database.js",
+    "load": "node db/load.js"
   },
   "engines": {
     "node": ">=20"

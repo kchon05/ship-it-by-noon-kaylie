@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f1e8">
+    <title>Study Spot | Seattle Cafe Finder</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #27382f;
+        --muted: #716b60;
+        --paper: #f6f1e8;
+        --card: #fffdf8;
+        --line: #e8dfd2;
+        --green: #3f624f;
+        --green-soft: #e5ece4;
+        --brown: #80583f;
+        --brown-deep: #62432f;
+        --brown-soft: #f0e3d5;
+        --caramel: #b9825a;
+        --handwritten: "Bradley Hand", "Segoe Print", "Noteworthy", "Chalkboard", cursive;
+        --shadow: 0 18px 50px rgb(75 54 38 / 9%);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(ellipse at 86% 4%, rgb(234 221 202 / 52%), transparent 32rem),
+          var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .skip-link {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        z-index: 2;
+        padding: 0.7rem 1rem;
+        transform: translateY(-180%);
+        border-radius: 0.5rem;
+        background: var(--ink);
+        color: white;
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      .site-header,
+      main,
+      .site-footer {
+        width: min(1180px, calc(100% - 3rem));
+        margin-inline: auto;
+      }
+
+      .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-block: 1.2rem;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        color: var(--ink);
+        font-size: 1.05rem;
+        font-weight: 750;
+        letter-spacing: -0.035em;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 2.25rem;
+        height: 2.25rem;
+        place-items: center;
+        border-radius: 0.8rem;
+        background: var(--green);
+        color: #fffefa;
+      }
+
+      .header-note {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      main {
+        padding-bottom: 4rem;
+      }
+
+      .hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(230px, 0.6fr);
+        gap: 3rem;
+        align-items: center;
+        overflow: hidden;
+        padding: clamp(2rem, 6vw, 4.5rem);
+        border: 1px solid #e6e9df;
+        border-radius: 1.6rem;
+        background: linear-gradient(118deg, #f1eadf 0%, #f4f0e6 52%, #e9eee5 100%);
+      }
+
+      .hero::after {
+        position: absolute;
+        right: 12%;
+        bottom: -7rem;
+        width: 17rem;
+        height: 17rem;
+        border: 1px solid rgb(128 88 63 / 13%);
+        border-radius: 50%;
+        content: "";
+        pointer-events: none;
+      }
+
+      .eyebrow {
+        margin: 0 0 1rem;
+        color: var(--green);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 700px;
+        margin-bottom: 1rem;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.7rem, 6vw, 4.8rem);
+        font-weight: 500;
+        letter-spacing: -0.065em;
+        line-height: 0.99;
+      }
+
+      h1 em {
+        color: var(--brown);
+        font-family: var(--handwritten);
+        font-size: 0.9em;
+        font-style: normal;
+        font-weight: 500;
+        letter-spacing: -0.035em;
+      }
+
+      .hero-copy {
+        max-width: 580px;
+        margin-bottom: 1.8rem;
+        color: #52665c;
+        font-size: 1.05rem;
+      }
+
+      .location-form {
+        display: flex;
+        max-width: 620px;
+        gap: 0.65rem;
+        padding: 0.45rem;
+        border: 1px solid #e8ddd0;
+        border-radius: 0.9rem;
+        background: var(--card);
+        box-shadow: 0 8px 24px rgb(75 54 38 / 8%);
+      }
+
+      .location-field {
+        flex: 1;
+        min-width: 0;
+        padding: 0.35rem 0.6rem;
+      }
+
+      .location-field label {
+        display: block;
+        margin-bottom: 0.1rem;
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 750;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .location-field input,
+      .location-field select {
+        width: 100%;
+        padding: 0.15rem 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--ink);
+      }
+
+      .location-field select {
+        cursor: pointer;
+      }
+
+      .location-field:focus-within {
+        outline: 2px solid #c29470;
+        outline-offset: 3px;
+        border-radius: 0.2rem;
+      }
+
+      .search-button {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        min-height: 3.25rem;
+        padding: 0.7rem 1.1rem;
+        border: 0;
+        border-radius: 0.7rem;
+        background: var(--brown);
+        color: white;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 700;
+        transition: background 160ms ease, transform 160ms ease;
+      }
+
+      .search-button:hover {
+        transform: translateY(-1px);
+        background: var(--brown-deep);
+      }
+
+      .search-button:focus-visible {
+        outline: 3px solid #d7aa82;
+        outline-offset: 3px;
+      }
+
+      .form-hint {
+        margin: 0.65rem 0 0;
+        color: #806b58;
+        font-size: 0.8rem;
+      }
+
+      .hero-card {
+        position: relative;
+        z-index: 1;
+        padding: 1.5rem;
+        border: 1px solid rgb(255 255 255 / 90%);
+        border-radius: 1.2rem;
+        background: rgb(255 252 245 / 88%);
+        box-shadow: 0 16px 38px rgb(75 54 38 / 9%);
+        transform: rotate(1.5deg);
+      }
+
+      .hero-card-label {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin-bottom: 1rem;
+        color: var(--brown);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .hero-card h2 {
+        margin-bottom: 1.1rem;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.55rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+      }
+
+      .checklist {
+        display: grid;
+        gap: 0.75rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .checklist li {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: #42584d;
+        font-size: 0.88rem;
+      }
+
+      .check {
+        display: grid;
+        width: 1.45rem;
+        height: 1.45rem;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--green-soft);
+        color: var(--green);
+        font-size: 0.75rem;
+        font-weight: 800;
+      }
+
+      .results-section {
+        margin-top: 3.4rem;
+      }
+
+      .results-heading {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.1rem;
+      }
+
+      .results-heading .eyebrow {
+        margin-bottom: 0.4rem;
+        color: var(--brown);
+        font-family: var(--handwritten);
+        font-size: 1.15rem;
+        font-weight: 600;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+
+      .results-heading h2 {
+        margin-bottom: 0.2rem;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 500;
+        letter-spacing: -0.045em;
+      }
+
+      .results-heading p:last-child {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .result-count {
+        flex: 0 0 auto;
+        padding: 0.45rem 0.75rem;
+        border: 1px solid #e8dfd2;
+        border-radius: 99px;
+        background: var(--brown-soft);
+        color: var(--brown-deep);
+        font-size: 0.78rem;
+        font-weight: 750;
+      }
+
+      .demo-notice {
+        display: flex;
+        gap: 0.7rem;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        padding: 0.8rem 1rem;
+        border: 1px solid #ead8c4;
+        border-radius: 0.8rem;
+        background: #f8efe3;
+        color: #73573f;
+        font-size: 0.82rem;
+      }
+
+      .demo-notice strong {
+        color: #60442f;
+      }
+
+      .table-card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 1rem;
+        background: var(--card);
+        box-shadow: var(--shadow);
+      }
+
+      .table-scroll {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        min-width: 1100px;
+        border-collapse: collapse;
+        text-align: left;
+      }
+
+      caption {
+        padding: 0;
+      }
+
+      th,
+      td {
+        padding: 1.05rem 1rem;
+        vertical-align: top;
+      }
+
+      thead {
+        background: #f5f0e7;
+      }
+
+      th {
+        color: #69786f;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      tbody tr + tr {
+        border-top: 1px solid var(--line);
+      }
+
+      tbody tr:hover {
+        background: #fcfcf8;
+      }
+
+      .cafe-name {
+        display: block;
+        margin-bottom: 0.2rem;
+        color: var(--ink);
+        font-size: 0.98rem;
+        font-weight: 750;
+        letter-spacing: -0.02em;
+        text-decoration: none;
+      }
+
+      a.cafe-name:hover {
+        text-decoration: underline;
+      }
+
+      .cell-secondary {
+        display: block;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .source-link {
+        margin-top: 0.25rem;
+        color: var(--brown);
+        font-size: 0.68rem;
+      }
+
+      .distance {
+        color: var(--green);
+        font-size: 0.9rem;
+        font-weight: 750;
+        white-space: nowrap;
+      }
+
+      .crowd-chart {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.3rem;
+        width: 110px;
+        height: 3.6rem;
+        align-items: end;
+      }
+
+      .crowd-day {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: end;
+        gap: 0.22rem;
+      }
+
+      .crowd-track {
+        display: flex;
+        width: 0.72rem;
+        height: 2.35rem;
+        align-items: end;
+        overflow: hidden;
+        border-radius: 99px;
+        background: #edf0e9;
+      }
+
+      .crowd-fill {
+        display: block;
+        width: 100%;
+        border-radius: inherit;
+        background: #8ca28b;
+      }
+
+      .crowd-fill.is-busy {
+        background: var(--caramel);
+      }
+
+      .crowd-label {
+        color: #758179;
+        font-size: 0.62rem;
+        line-height: 1;
+      }
+
+      .menu-text {
+        max-width: 145px;
+        color: #3e5549;
+        font-size: 0.82rem;
+      }
+
+      .stack {
+        display: grid;
+        gap: 0.35rem;
+        color: #3e5549;
+        font-size: 0.78rem;
+      }
+
+      .tag-list,
+      .comfort-list {
+        display: flex;
+        max-width: 190px;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+      }
+
+      .tag,
+      .comfort {
+        display: inline-block;
+        padding: 0.24rem 0.48rem;
+        border-radius: 99px;
+        font-size: 0.68rem;
+        line-height: 1.35;
+      }
+
+      .tag {
+        background: var(--green-soft);
+        color: #355847;
+      }
+
+      .comfort {
+        background: var(--brown-soft);
+        color: #654d3b;
+      }
+
+      .table-footnote {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5rem 1rem;
+        padding: 0.85rem 1rem;
+        border-top: 1px solid var(--line);
+        color: #758179;
+        font-size: 0.75rem;
+      }
+
+      .status {
+        min-height: 1.5rem;
+        margin: 0.75rem 0 0;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .site-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-block: 1.2rem 2rem;
+        border-top: 1px solid #e8dfd2;
+        color: #81766a;
+        font-size: 0.78rem;
+      }
+
+      @media (max-width: 760px) {
+        .site-header,
+        main,
+        .site-footer {
+          width: min(100% - 1.5rem, 1180px);
+        }
+
+        .header-note {
+          display: none;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 1.6rem;
+          padding: 2rem 1.35rem;
+        }
+
+        .hero-card {
+          max-width: 420px;
+          transform: none;
+        }
+
+        .location-form {
+          flex-direction: column;
+          padding: 0.7rem;
+        }
+
+        .search-button {
+          width: 100%;
+        }
+
+        .results-section {
+          margin-top: 2.5rem;
+        }
+
+        .results-heading {
+          align-items: flex-start;
+        }
+      }
+
+      @media (max-width: 460px) {
+        .results-heading {
+          flex-direction: column;
+        }
+
+        .site-footer {
+          flex-direction: column;
+          gap: 0.25rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to results</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Study Spot home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M5 8h14l-1 11H6L5 8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M8 8a4 4 0 0 1 8 0M9 12h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </span>
+        Study Spot
+      </a>
+      <span class="header-note">A little more focus, one cafe at a time</span>
+    </header>
+
+    <main id="main-content">
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Seattle study cafe finder</p>
+          <h1 id="page-title">Find a spot to settle in <em>and get into it.</em></h1>
+          <p class="hero-copy">
+            Good coffee is a start. Find the comfy seats, handy outlets, and just-right atmosphere that make a study session last.
+          </p>
+          <form class="location-form" id="location-form">
+            <div class="location-field">
+              <label for="starting-area">Your starting neighborhood</label>
+              <select id="starting-area" name="starting-area" aria-describedby="form-hint">
+                <option>Capitol Hill</option>
+                <option>University District</option>
+                <option>Fremont</option>
+              </select>
+            </div>
+            <button class="search-button" type="submit">
+              Find nearby study spots
+              <span aria-hidden="true">→</span>
+            </button>
+          </form>
+          <p class="form-hint" id="form-hint">Distances are measured from the selected neighborhood center.</p>
+        </div>
+
+        <aside class="hero-card" aria-label="Study spot checklist">
+          <p class="hero-card-label"><span aria-hidden="true">✦</span> The study-session essentials</p>
+          <h2>More than a good cup.</h2>
+          <ul class="checklist">
+            <li><span class="check" aria-hidden="true">✓</span> A seat you can stay awhile in</li>
+            <li><span class="check" aria-hidden="true">✓</span> Outlets within reach</li>
+            <li><span class="check" aria-hidden="true">✓</span> A vibe that fits your focus</li>
+          </ul>
+        </aside>
+      </section>
+
+      <section class="results-section" aria-labelledby="results-title">
+        <div class="results-heading">
+          <div>
+            <p class="eyebrow">Your shortlist</p>
+            <h2 id="results-title">Study spots around <span id="area-label">Seattle</span></h2>
+            <p>Compare the details that make a cafe feel like your kind of place.</p>
+          </div>
+          <span class="result-count" id="result-count">Loading spots…</span>
+        </div>
+
+        <div class="demo-notice" id="demo-note">
+          <span aria-hidden="true">ⓘ</span>
+          <span><strong>Real cafe listings; incomplete study details.</strong> Names, map points, and listed websites are from OpenStreetMap. Distances are straight-line estimates from the selected neighborhood center. Crowd, transit, menu, vibe, outlet, and restroom details are shown only when available.</span>
+        </div>
+
+        <div class="table-card">
+          <div class="table-scroll" role="region" aria-label="Cafe comparison table; scroll horizontally to see every column" tabindex="0">
+            <table aria-describedby="demo-note table-notes">
+              <thead>
+                <tr>
+                  <th scope="col">Cafe &amp; neighborhood</th>
+                  <th scope="col">Distance from center</th>
+                  <th scope="col">Crowd by weekday</th>
+                  <th scope="col">Menu</th>
+                  <th scope="col">Getting there</th>
+                  <th scope="col">The vibe</th>
+                  <th scope="col">Study comforts</th>
+                </tr>
+              </thead>
+              <tbody id="cafe-results">
+                <tr>
+                  <td colspan="7">Loading cafe listings…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footnote" id="table-notes">
+            <span>Crowd bars appear only when crowd data is available; none is included with these listings yet.</span>
+            <span>Distances are not walking or transit routes.</span>
+          </div>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Made for long study sessions in Seattle.</span>
+      <span>Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a> (ODbL)</span>
+    </footer>
+
+    <script>
+      const form = document.querySelector('#location-form');
+      const startingArea = document.querySelector('#starting-area');
+      const areaLabel = document.querySelector('#area-label');
+      const results = document.querySelector('#cafe-results');
+      const resultCount = document.querySelector('#result-count');
+      const status = document.querySelector('#status');
+      const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+      function addTextCell(row, className, value) {
+        const cell = document.createElement('td');
+        const content = document.createElement('span');
+        content.className = className;
+        content.textContent = value;
+        cell.append(content);
+        row.append(cell);
+        return cell;
+      }
+
+      function addListCell(row, values, className, itemClassName) {
+        const cell = document.createElement('td');
+        const list = document.createElement('div');
+        list.className = className;
+        values.forEach((value) => {
+          const item = document.createElement('span');
+          item.className = itemClassName;
+          item.textContent = value;
+          list.append(item);
+        });
+        cell.append(list);
+        row.append(cell);
+      }
+
+      function addCrowdCell(row, crowd) {
+        const cell = document.createElement('td');
+        const dailyLevels = weekdays.map((_, index) => {
+          const dayEntries = crowd.filter((entry) => Number(entry.dayOfWeek) === index + 1);
+          if (dayEntries.length === 0) {
+            return null;
+          }
+          const average = dayEntries.reduce((total, entry) => total + Number(entry.busyPercent), 0)
+            / dayEntries.length;
+          return Math.round(average);
+        });
+
+        if (dailyLevels.every((level) => level === null)) {
+          const unavailable = document.createElement('span');
+          unavailable.className = 'cell-secondary';
+          unavailable.textContent = 'Not available';
+          cell.append(unavailable);
+          row.append(cell);
+          return;
+        }
+
+        const chart = document.createElement('div');
+        chart.className = 'crowd-chart';
+        chart.setAttribute('role', 'img');
+        chart.setAttribute(
+          'aria-label',
+          `Crowd by weekday: ${dailyLevels.map((level, index) => `${weekdays[index]} ${level === null ? 'no data' : `${level}% busy`}`).join(', ')}`
+        );
+        dailyLevels.forEach((level, index) => {
+          const day = document.createElement('span');
+          const track = document.createElement('span');
+          const fill = document.createElement('span');
+          const label = document.createElement('span');
+          day.className = 'crowd-day';
+          track.className = 'crowd-track';
+          fill.className = level !== null && level >= 65 ? 'crowd-fill is-busy' : 'crowd-fill';
+          fill.style.height = `${level || 0}%`;
+          label.className = 'crowd-label';
+          label.textContent = weekdays[index].slice(0, 1);
+          track.append(fill);
+          day.append(track, label);
+          chart.append(day);
+        });
+        cell.append(chart);
+        row.append(cell);
+      }
+
+      function makeCafeRow(cafe) {
+        const row = document.createElement('tr');
+        const cafeCell = document.createElement('td');
+        const name = cafe.websiteUrl
+          ? document.createElement('a')
+          : document.createElement('span');
+        const neighborhood = document.createElement('span');
+        name.className = 'cafe-name';
+        name.textContent = cafe.name;
+        if (cafe.websiteUrl) {
+          name.href = cafe.websiteUrl;
+          name.target = '_blank';
+          name.rel = 'noopener noreferrer';
+        }
+        neighborhood.className = 'cell-secondary';
+        neighborhood.textContent = cafe.neighborhood;
+        cafeCell.append(name, neighborhood);
+        if (cafe.address) {
+          const address = document.createElement('span');
+          address.className = 'cell-secondary';
+          address.textContent = cafe.address;
+          cafeCell.append(address);
+        }
+        const source = document.createElement('a');
+        source.className = 'cell-secondary source-link';
+        source.href = cafe.sourceUrl;
+        source.target = '_blank';
+        source.rel = 'noopener noreferrer';
+        source.textContent = 'OpenStreetMap record';
+        cafeCell.append(source);
+        row.append(cafeCell);
+
+        const distance = cafe.distanceMiles === null || cafe.distanceMiles === undefined
+          ? Number.NaN
+          : Number(cafe.distanceMiles);
+        addTextCell(
+          row,
+          'distance',
+          Number.isFinite(distance) ? `${distance.toFixed(1)} mi` : 'Not available'
+        );
+        addCrowdCell(row, cafe.crowd);
+        addTextCell(row, 'menu-text', cafe.menuSummary || 'Not verified');
+
+        const transitOptions = cafe.transit.map((option) => {
+          const duration = option.travelMinutes ? ` · ${option.travelMinutes} min` : '';
+          const estimate = option.isEstimate ? ' (estimate)' : '';
+          return `${option.mode}${duration}${estimate}`;
+        });
+        addListCell(
+          row,
+          transitOptions.length > 0 ? transitOptions : ['Not verified'],
+          'stack',
+          'cell-secondary'
+        );
+
+        const vibeTags = cafe.vibeDescription
+          ? cafe.vibeDescription.split(',').map((vibe) => vibe.trim()).filter(Boolean)
+          : ['Not verified'];
+        addListCell(row, vibeTags, 'tag-list', 'tag');
+
+        const comforts = [
+          cafe.seatingDescription || 'Seating not verified',
+          cafe.outletRating ? `Outlet availability: ${cafe.outletRating}/5` : 'Outlets not verified',
+          cafe.restroomAvailable === null || cafe.restroomAvailable === undefined
+            ? 'Restroom not verified'
+            : cafe.restroomAvailable ? 'Restroom listed' : 'No restroom listed',
+        ];
+        addListCell(row, comforts, 'comfort-list', 'comfort');
+        return row;
+      }
+
+      async function loadCafes() {
+        const neighborhood = startingArea.value;
+        status.textContent = 'Loading cafe listings…';
+        try {
+          const params = new URLSearchParams({ neighborhood });
+          const response = await fetch(`/api/cafes?${params}`);
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || `Cafe request failed with status ${response.status}`);
+          }
+          if (!Array.isArray(data.cafes)) {
+            throw new Error('Cafe response did not contain a list');
+          }
+          areaLabel.textContent = neighborhood;
+          if (data.cafes.length === 0) {
+            const emptyRow = document.createElement('tr');
+            const message = document.createElement('td');
+            message.colSpan = 7;
+            message.textContent = 'No cafes were found for this starting neighborhood.';
+            emptyRow.append(message);
+            results.replaceChildren(emptyRow);
+          } else {
+            results.replaceChildren(...data.cafes.map(makeCafeRow));
+          }
+          resultCount.textContent = `${data.cafes.length} cafes`;
+          status.textContent = `Showing cafes ordered by approximate distance from ${neighborhood}.`;
+        } catch (error) {
+          console.error('Could not load cafe listings:', error);
+          results.replaceChildren();
+          resultCount.textContent = 'Spots unavailable';
+          status.textContent = error instanceof Error
+            ? error.message
+            : 'Could not load cafe listings. Check that the database is loaded and reachable.';
+        }
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        loadCafes();
+      });
+
+      loadCafes();
+    </script>
+  </body>
+</html>
